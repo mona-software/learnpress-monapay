@@ -1,0 +1,21 @@
+{
+  "name": "themonagroup/learnpress-monapay",
+  "description": "MONA Pay dynamic VietQR and webhook payment method for LearnPress",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.4",
+    "monapay/php-sdk": "^0.4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
+  },
+  "config": {
+    "vendor-dir": ".build/vendor",
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": "phpunit --configuration phpunit.xml.dist"
+  }
+}
+

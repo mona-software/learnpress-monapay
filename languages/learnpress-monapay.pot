@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MONA Pay for LearnPress 1.0.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: learnpress-monapay\n"
+
+msgid "MONA Pay bank transfer (VietQR)"
+msgstr ""
+
+msgid "Scan the dynamic VietQR. Your course order is confirmed automatically when the transfer arrives."
+msgstr ""
+
+msgid "Scan VietQR to pay"
+msgstr ""
+
+msgid "Please verify all payment information before making the transfer."
+msgstr ""
+
+msgid "Transfer content:"
+msgstr ""
+
+msgid "The order will complete automatically and course enrollment will be granted after the bank transfer is confirmed."
+msgstr ""
+

@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MONA Pay for LearnPress 1.0.0\n"
+"PO-Revision-Date: 2026-09-26 09:30+0700\n"
+"Last-Translator: The MONA Group <info@themona.global>\n"
+"Language-Team: Vietnamese <info@themona.global>\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: learnpress-monapay\n"
+
+msgid "MONA Pay bank transfer (VietQR)"
+msgstr "Chuyển khoản MONA Pay (VietQR)"
+
+msgid "Scan the dynamic VietQR. Your course order is confirmed automatically when the transfer arrives."
+msgstr "Quét mã VietQR động. Đơn khoá học được xác nhận tự động khi tiền về."
+
+msgid "Scan VietQR to pay"
+msgstr "Quét VietQR để thanh toán"
+
+msgid "Please verify all payment information before making the transfer."
+msgstr "Quý khách vui lòng kiểm tra thông tin thanh toán trước khi thực hiện giao dịch."
+
+msgid "Transfer content:"
+msgstr "Nội dung chuyển khoản:"
+
+msgid "The order will complete automatically and course enrollment will be granted after the bank transfer is confirmed."
+msgstr "Đơn hàng sẽ tự hoàn tất và học viên được ghi danh sau khi ngân hàng xác nhận giao dịch."
