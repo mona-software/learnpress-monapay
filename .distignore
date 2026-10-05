@@ -2,11 +2,6 @@
 /.git
 /.github
 /.gitignore
-/BRIEF-CHUNG.md
-/BRIEF.md
-/REPORT.md
-/ref
-/start.out
 /tests
 /phpunit.xml.dist
 

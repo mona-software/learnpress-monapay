@@ -12,12 +12,12 @@ WordPress plugin that adds a MONA Pay bank transfer (VietQR) payment method to L
 
 ## Install
 
-The plugin loads the official [`monapay/php-sdk`](https://github.com/mona-software/monapay-php) from `vendor/autoload.php`, so the dependencies must be installed into `vendor/` before packaging:
+The plugin loads the official [`monapay/php-sdk`](https://github.com/mona-software/monapay-php) from `vendor/autoload.php`, so install the dependencies before packaging:
 
 ```bash
 git clone https://github.com/mona-software/learnpress-monapay.git
 cd learnpress-monapay
-COMPOSER_VENDOR_DIR=vendor composer install --no-dev
+composer install --no-dev
 sh build-zip.sh
 ```
 
