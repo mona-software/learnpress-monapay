@@ -1,27 +1,66 @@
 # MONA Pay for LearnPress
 
-Add **MONA Pay bank transfer (VietQR)** to LearnPress. A student places a course order, sees a dynamic VietQR for the exact tuition and `LP{order_id}` transfer content, then a signed MONA Pay webhook completes the LearnPress order and activates course enrollment.
+WordPress plugin that adds a MONA Pay bank transfer (VietQR) payment method to LearnPress: the student pays a course order with a dynamic VietQR, and a signed MONA Pay webhook completes the order so LearnPress grants enrollment.
 
-MONA Pay provides automatic bank-transfer confirmation with dynamic VietQR, virtual accounts, and webhooks. Funds go directly to your bank account; MONA Pay does not hold funds. Supported banks and connection status: https://monapay.vn/ngan-hang.
+## Requirements
 
-## Tiếng Việt
+- WordPress 6.2 or later
+- PHP 7.4 or later
+- LearnPress installed and active
+- LearnPress currency set to `VND`
+- A MONA Pay account with API client credentials, VietQR/virtual-account details and a webhook secret
 
-### Cài đặt
+## Install
 
-1. Nén thư mục thành `learnpress-monapay.zip`, cài tại **WordPress → Plugins → Add New → Upload Plugin**.
-2. Bật LearnPress trước, sau đó kích hoạt **MONA Pay for LearnPress**.
-3. Vào **LearnPress → Settings → Payments → MONA Pay** và nhập Client ID, Client Secret, thông tin VietQR/VA cùng Webhook Secret.
-4. Đặt tiền tệ LearnPress là `VND`.
-5. Trong MONA Pay Dashboard, tạo webhook `HMAC_SHA256`, payload `application/json`, URL:
-   `https://your-site.example/wp-json/learnpress-monapay/v1/webhook`
+The plugin loads the official [`monapay/php-sdk`](https://github.com/mona-software/monapay-php) from `vendor/autoload.php`, so the dependencies must be installed into `vendor/` before packaging:
 
-Form cài đặt và checkout dùng nonce của LearnPress/WordPress. Endpoint webhook là server-to-server nên xác thực bằng raw-body HMAC và cửa sổ thời gian 5 phút, không dùng nonce trình duyệt.
+```bash
+git clone https://github.com/mona-software/learnpress-monapay.git
+cd learnpress-monapay
+COMPOSER_VENDOR_DIR=vendor composer install --no-dev
+sh build-zip.sh
+```
 
-### Luồng chạy
+`build-zip.sh` creates `learnpress-monapay.zip`. Upload it under **Plugins → Add New → Upload Plugin**, activate LearnPress first, then activate **MONA Pay for LearnPress**.
 
-LearnPress tạo order → SDK chính thức `monapay/php-sdk` tạo VietQR → trang nhận đơn hiện QR, số tiền và `LP{id}` → MONA Pay gửi payload phẳng → plugin kiểm `X-Mona-Timestamp` + `X-Mona-Signature`, loại giao dịch không phải tiền vào/trùng/thiếu tiền/sai nội dung → gọi `LP_Order::payment_complete()` để hoàn tất đơn và ghi danh.
+## Configuration
 
-### Kiểm thử
+Open **LearnPress → Settings → Payments → MONA Pay** and fill in:
+
+| Setting | Notes |
+| --- | --- |
+| Enable/Disable | Turns the payment method on |
+| Title, Description | Shown to students at checkout |
+| Client ID, Client Secret | MONA Pay API client credentials |
+| Account number | VietQR beneficiary account (`owner_number`) |
+| Account owner type | `ORG` (organization) or `PER` (individual) |
+| Merchant ID, Terminal ID | From your MONA Pay VietQR setup |
+| Virtual account prefix | `virtualAccountPrefix`, up to 10 characters |
+| Beneficiary name | Name shown on the QR |
+| Webhook Secret | Shared secret for webhook signatures |
+
+The method only appears at checkout when the currency is `VND` and every field from Client ID to Webhook Secret is filled in.
+
+In the MONA Pay dashboard, create a webhook with signature type `HMAC_SHA256`, content type `application/json`, and this URL (also shown under the Webhook Secret field):
+
+```
+https://your-site.example/wp-json/learnpress-monapay/v1/webhook
+```
+
+## Usage
+
+1. A student checks out a course with MONA Pay. The plugin calls the MONA Pay API through the PHP SDK to create a dynamic VietQR for the exact order total, with order code and transfer memo `LP{order_id}`.
+2. The order-received page shows the QR, the amount and the transfer memo.
+3. When the transfer arrives, MONA Pay posts a flat JSON payload to the webhook. The plugin verifies `X-Mona-Signature` (HMAC-SHA256 over `timestamp.raw_body`) and rejects requests whose `X-Mona-Timestamp` is more than five minutes off.
+4. The plugin accepts only income transactions, matches the `LP{order_id}` memo to an order paid with MONA Pay, rejects underpayments, ignores already-processed transaction codes, then calls `LP_Order::payment_complete()` so LearnPress completes the order and grants enrollment.
+
+The webhook is a server-to-server endpoint, so it is authenticated by the HMAC signature and timestamp rather than a WordPress nonce. The settings and checkout forms use the standard LearnPress/WordPress nonces.
+
+### External service
+
+The plugin calls `https://api.monapay.vn` only when a student starts MONA Pay checkout. It sends the order amount, the `LP{order_id}` identifier, the VietQR beneficiary settings and, when available, the payer email. MONA Pay later sends the transaction amount, transfer memo, account number, direction and transaction code to the webhook. Nothing is sent until the merchant configures the method and a student selects it. See [monapay.vn](https://monapay.vn) for the service terms and privacy policy, and [monapay.vn/docs](https://monapay.vn/docs) for the API reference.
+
+## Development
 
 ```bash
 composer install
@@ -29,37 +68,10 @@ composer test
 sh tests/check-package.sh
 ```
 
-Ảnh chụp cần bổ sung trước khi nộp: `docs/screenshot-*.png` (xem `docs/screenshots.md`).
+`composer test` runs the PHPUnit suite for webhook signatures and payment matching. `tests/check-package.sh` checks the package structure and PHP syntax; it expects `vendor/autoload.php`, so run it after installing dependencies into `vendor/` as shown in [Install](#install).
 
-## English
+## License
 
-### Install and configure
-
-1. Zip this directory as `learnpress-monapay.zip`, then upload it under **WordPress → Plugins → Add New**.
-2. Activate LearnPress first, then activate this plugin.
-3. Open **LearnPress → Settings → Payments → MONA Pay** and enter the Client ID, Client Secret, VietQR/virtual-account values, and Webhook Secret.
-4. Set the LearnPress currency to `VND`.
-5. Create an `HMAC_SHA256`, `application/json` webhook in the MONA Pay Dashboard using:
-   `https://your-site.example/wp-json/learnpress-monapay/v1/webhook`
-
-The LearnPress settings and checkout forms are protected by the platform's WordPress nonces. The server-to-server webhook authenticates the raw body with HMAC and a five-minute timestamp window.
-
-### Payment flow
-
-LearnPress creates an order → the official `monapay/php-sdk` creates its dynamic VietQR → the received-order screen displays the QR, exact amount, and `LP{id}` → MONA Pay posts a flat payload → the plugin verifies the signature, direction, duplicate transaction code, amount, and transfer content → `LP_Order::payment_complete()` completes the order and grants enrollment.
-
-Documentation: https://monapay.vn/docs · Product: https://monapay.vn
-
-### External service disclosure
-
-This plugin requires MONA Pay and calls `https://api.monapay.vn` when a student starts MONA Pay checkout. It sends the order amount, `LP{order_id}`, VietQR beneficiary configuration, and payer email when available to generate the QR. MONA Pay sends transaction amount, content, account number, direction, and transaction code to the configured webhook for confirmation. No data is sent until the merchant enables/configures the method and a student selects it.
-
-Terms: https://monapay.vn/dieu-khoan · Privacy: https://monapay.vn/chinh-sach-bao-mat
-
-License: MIT. The bundled official MONA Pay PHP SDK is also MIT licensed; see `vendor/monapay/php-sdk/LICENSE`.
-
-Official SDK source: https://github.com/mona-software/monapay-php
+MIT. See [LICENSE](LICENSE). The bundled MONA Pay PHP SDK is also MIT licensed.
 
 **MONA Pay is part of MONA Cloud by The MONA Group.**
-
-**MONA Pay thuộc bộ MONA Cloud của The MONA Group.**
