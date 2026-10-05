@@ -58,4 +58,8 @@ Terms: https://monapay.vn/dieu-khoan · Privacy: https://monapay.vn/chinh-sach-b
 
 License: MIT. The bundled official MONA Pay PHP SDK is also MIT licensed; see `vendor/monapay/php-sdk/LICENSE`.
 
-Official SDK source: https://github.com/themonagroup/monapay-php
+Official SDK source: https://github.com/mona-software/monapay-php
+
+**MONA Pay is part of MONA Cloud by The MONA Group.**
+
+**MONA Pay thuộc bộ MONA Cloud của The MONA Group.**
